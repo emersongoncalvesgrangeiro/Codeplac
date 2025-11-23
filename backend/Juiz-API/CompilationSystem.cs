@@ -1,46 +1,28 @@
-using System;
-using System.Threading;
 using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace CompilationSystem
 {
   public class CompilationSystem
   {
-    public string output, error;
+    public string output = "", error = "";
     public CompilationSystem()
     {
-      string path = "./CodeData/";
-      try
-      {
-        if (!Directory.Exists(path))
-        {
-          Directory.CreateDirectory(path);
-          //CreateANewDiretory();
-        }
-        else
-        {
 
-        }
-      }
-      catch (Exception e)
-      {
-        Console.WriteLine($"Exeption Error: ${e.Message}");
-      }
     }
-    private void CreateANewDiretory(string name, int reg)
+    public async Task CreateANewDiretory(string name, int reg)
     {
       try
       {
-        string path = name + reg;
+        string path = $"/CodeData/${name}";
+        Console.WriteLine(path + "\n");
         if (!Directory.Exists(path))
         {
           Directory.CreateDirectory(path);
+          await Checker(path);
         }
         else
         {
-          Checker(path);
+          await Checker(path);
         }
       }
       catch (Exception e)
@@ -48,7 +30,7 @@ namespace CompilationSystem
         Console.WriteLine($"Exeption Error: ${e.Message}");
       }
     }
-    private void Checker(string path)
+    private async Task Checker(string path)
     {
       string[] archives = Directory.GetFiles(path);
       string compilationinfo = "";
@@ -66,7 +48,7 @@ namespace CompilationSystem
         default:
           break;
       }
-      Compiler(archives, path, compilationinfo);
+      await Compiler(archives, path, compilationinfo);
     }
     private async Task Compiler(string[] archives, string path, string type)
     {
@@ -85,11 +67,11 @@ namespace CompilationSystem
       {
         if (type == "java")
         {
-          process.Arguments = $"-c cd /${path}/ && javac -d out ${archivelist}";
+          process.Arguments = $"-c \"cd /${path}/ && javac *.java -d out\"";
         }
         else if (type == "c")
         {
-          process.Arguments = $"-c cd /${path}/ && gcc ${archivelist} -o out";
+          process.Arguments = $"-c \"mv main.c /${path} && cd /${path}/ && gcc ${archivelist} -o out\"";
         }
         using var processstart = Process.Start(process);
         output = processstart.StandardOutput.ReadToEnd();

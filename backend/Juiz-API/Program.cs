@@ -1,8 +1,5 @@
-
 using System.Text;
 using CompilationSystem;
-
-List<string> responses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +8,7 @@ builder.WebHost.UseUrls("http://0.0.0.0:3636");
 var app = builder.Build();
 
 
-//CompilationSystem.CompilationSystem compilation = new CompilationSystem.CompilationSystem();
-
+CompilationSystem.CompilationSystem compilation = new CompilationSystem.CompilationSystem();
 
 app.UseWebSockets();
 
@@ -32,11 +28,11 @@ app.Map("/", async context =>
         await ws.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "Closed", CancellationToken.None);
         break;
       }
-      var msg = Encoding.ASCII.GetString(buffer, 0, resultvariable.Count);
-      Console.ForegroundColor = ConsoleColor.Blue;
-      Console.WriteLine($"Recieved message: ${msg}");
-      var response = Encoding.ASCII.GetBytes($"Echo: ${msg}");
-      await ws.SendAsync(response, System.Net.WebSockets.WebSocketMessageType.Binary, true, CancellationToken.None);
+      var msg = Encoding.UTF8.GetString(buffer, 0, resultvariable.Count);
+      string data = new string(msg.Where(char.IsDigit).ToArray());
+      compilation.CreateANewDiretory(msg, int.Parse(data));
+      var response = Encoding.UTF8.GetBytes($"Echo: ${msg}");
+      //await ws.SendAsync(response, System.Net.WebSockets.WebSocketMessageType.Binary, true, CancellationToken.None);
     }
     if (ws.State == System.Net.WebSockets.WebSocketState.Closed)
     {
