@@ -1,5 +1,8 @@
 using System.Text;
 using CompilationSystem;
+using MySqlX.XDevAPI.Common;
+using Org.BouncyCastle.Asn1.Ocsp;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,31 @@ var app = builder.Build();
 CompilationSystem.CompilationSystem compilation = new CompilationSystem.CompilationSystem();
 
 app.UseWebSockets();
+
+app.MapPost("/upload", async (HttpRequest request) =>
+{
+    if (!request.HasFormContentType)
+    {
+        return Results.BadRequest("O conteúdo deve ser multipart/form-data.");
+    }
+
+    var form = await request.ReadFormAsync();
+    var arquivo = form.Files["Código"];
+
+    if(arquivo is null)
+        return Results.BadRequest("Nenhum arquivo encontrado. ");
+
+    using var stream = arquivo.OpenReadStream();
+    using var ms = new MemoryStream();
+    await stream.CopyToAsync(ms);
+    var filesBytes = ms.ToArray();
+
+    Console.WriteLine($"Arquivo recebido: (arquivo.FileName) ({arquivo.Length} bytes)");
+
+    return Results.Ok(new {mensagem = "upload realizado com sucesso!"});
+
+    
+});
 
 app.Map("/", async context =>
 {
