@@ -2,32 +2,39 @@ using MySql.Data;
 using dotenv.net;
 using MySql.Data.MySqlClient;
 using System.Threading.Tasks;
+using System.Data;
 
 namespace DataBase
 {
   public class DB
   {
     private string stringConnection;
-    public DB()
+    public DB(string name, int mat, int pont, string apro)
     {
       DotEnv.Load();
-      stringConnection = Environment.GetEnvironmentVariable("ConnectionString");
+      stringConnection = Environment.GetEnvironmentVariable("StringConnection");
+      Connection(name, mat, pont, apro);
     }
-    private async Task Connection(string table_name, string name, string mat, int pont, string apro)
+    private async Task Connection(string name, int mat, int pont, string apro)
     {
-      var connection = new MySql.Data.MySqlClient.MySqlConnection(stringConnection);
+      MySqlConnection connection = new MySqlConnection(stringConnection);
+      MySqlCommand command = new MySqlCommand("INSERT INTO `dados`(`name`, `mat`, `pont`, `aprov`) VALUES (@name, @mat, @pont, @apro)", connection);
       try
       {
         await connection.OpenAsync();
-        MySqlCommand command = new MySqlCommand();
-        command.Connection = connection;
-        string sql = $@"INSERT INTO ${table_name} (nome, matricula, pontuacao, aprovacao) VALUES (@name, @mat, @pont, @apro);";
-        command.CommandText = sql;
-        command.Parameters.AddWithValue("@name", name);
-        command.Parameters.AddWithValue("@mat", mat);
-        command.Parameters.AddWithValue("@pont", pont);
-        command.Parameters.AddWithValue("@apro", apro);
-        var commandrunner = command.ExecuteNonQueryAsync();
+        if (connection.State == ConnectionState.Open)
+        {
+          command.Parameters.AddWithValue("@name", name);
+          command.Parameters.AddWithValue("@mat", mat);
+          command.Parameters.AddWithValue("@pont", pont);
+          command.Parameters.AddWithValue("@apro", apro);
+          await command.ExecuteNonQueryAsync();
+        }
+        else
+        {
+          Thread.Sleep(100);
+          await Connection(name, mat, pont, apro);
+        }
       }
       catch (MySqlException e)
       {
