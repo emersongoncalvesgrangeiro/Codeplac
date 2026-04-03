@@ -45,7 +45,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher("/auth/reset-password", HttpMethod.POST.name()),
             // Usuário
             new AntPathRequestMatcher("/users/register", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/users/register/", HttpMethod.POST.name()), // ← com barra final
+            new AntPathRequestMatcher("/users/register/", HttpMethod.POST.name()),
             // Equipes
             new AntPathRequestMatcher("/equipes/inscricao", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/equipes/inscricao/", HttpMethod.POST.name()),
@@ -78,8 +78,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         logger.debug("Recebendo requisição: {} {}", method, requestUri);
 
         // Verifica se a requisição é para um endpoint público
-        boolean isPublic = PUBLIC_ENDPOINTS.stream()
-                .anyMatch(matcher -> matcher.matches(request));
+        boolean isPublic = PUBLIC_ENDPOINTS.stream().anyMatch(matcher -> matcher.matches(request));
 
         if (isPublic) {
             logger.info("Requisição para rota pública: {} - pulando validação de token.", requestUri);

@@ -26,7 +26,13 @@ function Inscricao() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const camposObrigatorios = ["nome_equipe", "nome_lider", "membro2", "membro3", "membro4"];
+    const camposObrigatorios = [
+      "nome_equipe",
+      "nome_lider",
+      "membro2",
+      "membro3",
+      "membro4",
+    ];
     const camposVazios = camposObrigatorios.some(
       (campo) => formData[campo].trim() === "",
     );
@@ -128,16 +134,6 @@ function Inscricao() {
                       />
                     </div>
                     <div className="enroll-input-group">
-                      <label className="enroll-label">MEMBRO 2</label>
-                      <input
-                        type="text"
-                        className="enroll-input"
-                        name="membro2"
-                        value={formData.membro2}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="enroll-input-group">
                       <label className="enroll-label">MEMBRO 3</label>
                       <input
                         type="text"
@@ -169,7 +165,14 @@ function Inscricao() {
                         onChange={handleChange}
                       />
                     </div>
-                    <div className="enroll-input-group">
+                    <div
+                      className="enroll-input-group"
+                      style={{
+                        gridColumn: "1 / -1",
+                        maxWidth: "100%",
+                        margin: "10 auto",
+                      }}
+                    >
                       <label className="enroll-label">
                         MEMBRO 6 (OPCIONAL)
                       </label>
